@@ -30,6 +30,18 @@ jobs:
       - name: Unit Tests
         run: dotnet test --configuration Release --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx"
 
+      - name: Validate translation packs
+        # Runs validate-packs CLI against the in-repo translations/ folder.
+        # continue-on-error keeps the step report-only initially - the new
+        # HTML-tag-mismatch + _maintainer rules surface known pre-existing
+        # issues in hindi/indonesian/thai/romanian language packs that need
+        # maintainer follow-up. Once those are fixed, drop continue-on-error
+        # so CI gates new slop entries from landing.
+        continue-on-error: true
+        env:
+          Translation__OutputDirectory: ${{ github.workspace }}/translations
+        run: dotnet run --project Translator/BTCPayTranslator.csproj --configuration Release --no-build -- validate-packs
+
       - name: Upload test logs
         if: always()
         uses: actions/upload-artifact@v4
