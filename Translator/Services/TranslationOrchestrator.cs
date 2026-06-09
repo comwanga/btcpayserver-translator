@@ -615,12 +615,20 @@ public class TranslationOrchestrator
             var (code, _) = match.Value;
             if (filterCodes != null && !filterCodes.Contains(code))
                 continue;
-
-            var added = await _fileWriter.InsertMissingKeysAsync(filePath, sourceTranslations);
-            addedByFile[Path.GetFileName(filePath)] = added;
-            totalAdded += added;
-            processed++;
-            _logger.LogInformation("  {FileName}: +{Added}", Path.GetFileName(filePath), added);
+            
+            try
+            {
+                var added = await _fileWriter.InsertMissingKeysAsync(filePath, sourceTranslations);
+                addedByFile[Path.GetFileName(filePath)] = added;
+                totalAdded += added;
+                processed++;
+                _logger.LogInformation("  {FileName}: +{Added}", Path.GetFileName(filePath), added);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "  {FileName}: failed to insert missing keys", Path.GetFileName(filePath));
+                skipped++;
+            }
         }
 
         _logger.LogInformation(

@@ -185,7 +185,7 @@ public class FileWriter
     }
 
     // Same comparer the writer uses for ordering (OrderBy(t => t.Key) -> Comparer<string>.Default).
-    private static readonly IComparer<string> WriterKeyComparer = Comparer<string>.Default;
+    private static readonly IComparer<string> WriterKeyComparer = StringComparer.Ordinal;
 
     private static readonly Regex TrailingCommaRegex = new(@",(\s*)$", RegexOptions.Compiled);
 
